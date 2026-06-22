@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Shovel Energy | EX3600 & EX2500</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0a0e1a;--bg2:#111827;--card:#152033;--card2:#1a2740;
+  --gold:#f5a623;--blue:#3b82f6;--green:#10b981;--red:#ef4444;--purple:#8b5cf6;--cyan:#06b6d4;--orange:#f97316;
+  --t1:#f0f4ff;--t2:#94a3b8;--t3:#64748b;
+  --br:#1e3a5f;--br2:#2d4a6e;
+  --r:12px;--r-sm:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;overflow-x:hidden;font-size:14px}
+
+/* HEADER */
+.hdr{
+  background:linear-gradient(135deg,#16091f,#281240,#16091f);
+  border-bottom:2px solid rgba(245,166,35,.3);
+  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  position:sticky;top:0;z-index:200;box-shadow:0 2px 16px rgba(0,0,0,.6);
+}
+.logo{width:40px;height:40px;min-width:40px;background:linear-gradient(135deg,#c0392b,#7d1f1f);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 10px rgba(192,57,43,.4)}
+.hdr-t1{font-size:15px;font-weight:700;white-space:nowrap}
+.hdr-t2{font-size:10px;color:var(--t2);margin-top:1px}
+.hdr-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.badge{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-live{background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.3);color:var(--green)}
+.badge-view{background:rgba(59,130,246,.12);border:1px solid rgba(59,130,246,.3);color:var(--blue)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.35}}
+.btn{border:none;padding:7px 13px;border-radius:var(--r-sm);cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;transition:all .2s;white-space:nowrap;text-decoration:none}
+.btn-print{background:rgba(245,166,35,.15);border:1px solid rgba(245,166,35,.35);color:var(--gold)}
+.btn-back{background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.35);color:var(--blue)}
+@media(max-width:480px){.hdr-t2{display:none}.btn .lbl{display:none}}
+
+/* CONTROLS */
+.ctrl{background:var(--bg2);border-bottom:1px solid var(--br);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ctrl-lbl{font-size:10px;color:var(--t3);font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.sel{background:var(--card);border:1px solid var(--br2);color:var(--t1);padding:8px 10px;border-radius:var(--r-sm);font-size:13px;font-family:inherit;cursor:pointer;outline:none}
+.sel:focus{border-color:var(--blue)}
+.tabs{display:flex;gap:5px;margin-left:auto}
+.tab{padding:6px 14px;border-radius:var(--r-sm);border:1px solid var(--br2);background:transparent;color:var(--t2);cursor:pointer;font-size:12px;font-weight:700;font-family:inherit;transition:all .2s}
+.tab.on{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.4);color:var(--gold)}
+@media(max-width:600px){.tabs{margin-left:0;width:100%}.tab{flex:1;text-align:center;font-size:11px;padding:6px 6px}}
+
+/* MAIN */
+.main{padding:14px 16px 20px}
+
+/* SPEC BOX */
+.spec-box{background:rgba(245,166,35,.06);border:1px solid rgba(245,166,35,.2);border-radius:var(--r);padding:12px 14px;margin-bottom:14px}
+.spec-title{font-size:11px;font-weight:700;color:var(--gold);margin-bottom:7px}
+.spec-list{display:flex;gap:12px;flex-wrap:wrap}
+.spec-item{font-size:11px;color:var(--t2);line-height:1.6}
+.spec-item strong{color:var(--t1)}
+
+/* SECTION */
+.sec-bar{display:flex;align-items:center;gap:10px;margin:16px 0 10px}
+.sec-badge{padding:4px 14px;border-radius:20px;font-size:11px;font-weight:800;letter-spacing:.5px}
+.sec-title{font-size:14px;font-weight:700}
+
+/* SHOVEL CARD GRID */
+.sh-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
+@media(min-width:600px){.sh-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:900px){.sh-grid{grid-template-columns:repeat(4,1fr)}}
+.sh-card{background:var(--card);border:1px solid var(--br);border-radius:var(--r);padding:13px;position:relative;overflow:hidden;transition:all .2s}
+.sh-card:active{transform:scale(.98)}
+.sh-stripe{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--r) var(--r) 0 0}
+.sh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.sh-name{font-size:13px;font-weight:800}
+.sh-type{font-size:9px;color:var(--t3);font-weight:700;letter-spacing:.4px}
+.sh-status{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.st-ok{background:var(--green);box-shadow:0 0 6px rgba(16,185,129,.5)}
+.st-warn{background:var(--gold);box-shadow:0 0 6px rgba(245,166,35,.5)}
+.st-bad{background:var(--red);box-shadow:0 0 6px rgba(239,68,68,.5)}
+.sh-vals{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:6px}
+.sh-v{font-size:19px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.sh-lbl{font-size:9px;color:var(--t3);margin-top:2px}
+.sh-sub{font-size:10px;color:var(--t2);margin-bottom:6px}
+.sh-bar-row{font-size:9px;color:var(--t3);display:flex;justify-content:space-between;margin-bottom:3px}
+.sh-bar-bg{height:5px;background:rgba(255,255,255,.07);border-radius:3px;overflow:hidden}
+.sh-bar-fill{height:100%;border-radius:3px;transition:width .6s}
+.sh-cost{font-size:10px;color:var(--t2);margin-top:6px}
+.sh-cost span{color:var(--gold);font-family:'JetBrains Mono',monospace;font-weight:700}
+
+/* CHARTS */
+.chart-grid-2{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:12px}
+@media(min-width:700px){.chart-grid-2{grid-template-columns:1fr 1fr}}
+.chart-card{background:var(--card);border:1px solid var(--br);border-radius:var(--r);padding:14px}
+.chart-card.full{grid-column:1/-1}
+.chart-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap}
+.chart-title{font-size:13px;font-weight:700}
+.chart-sub{font-size:10px;color:var(--t3);margin-top:2px}
+.chart-legend{display:flex;gap:10px;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--t2)}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.cw{position:relative;height:200px}
+.cw-tall{position:relative;height:250px}
+@media(max-width:480px){.cw{height:170px}.cw-tall{height:210px}}
+
+/* TABLE */
+.tbl-wrap{background:var(--card);border:1px solid var(--br);border-radius:var(--r);padding:14px;overflow-x:auto;margin-bottom:12px}
+.tbl-title{font-size:13px;font-weight:700;margin-bottom:12px}
+table{width:100%;border-collapse:collapse;min-width:580px}
+th{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;text-align:right;border-bottom:1px solid var(--br);white-space:nowrap}
+th:first-child{text-align:left}
+td{padding:9px 10px;border-bottom:1px solid rgba(30,58,95,.4);text-align:right;font-size:12px}
+td:first-child{text-align:left;font-weight:600}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(59,130,246,.04)}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px}
+.ok{color:var(--green);font-weight:700}
+.warn{color:var(--gold);font-weight:700}
+.bad{color:var(--red);font-weight:700}
+
+footer{text-align:center;padding:14px 16px;color:var(--t3);font-size:10px;border-top:1px solid var(--br)}
+
+.loader{position:fixed;inset:0;background:rgba(10,14,26,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px}
+.spin{width:44px;height:44px;border:3px solid var(--br);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff!important;color:#000!important}
+  .hdr,.ctrl{background:#16091f!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .loader,.btn-print,.btn-back{display:none!important}
+  .sh-grid{grid-template-columns:repeat(4,1fr)!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+
+<div class="loader" id="loader">
+  <div class="spin"></div>
+  <div style="color:var(--t2);font-size:12px">กำลังโหลดข้อมูล Shovel...</div>
+</div>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div style="display:flex;align-items:center;gap:11px;min-width:0">
+    <div class="logo">⛏️</div>
+    <div>
+      <div class="hdr-t1">Shovel Energy — EX3600 & EX2500</div>
+      <div class="hdr-t2">ค่าไฟฟ้าและ SMU เปรียบเทียบ Spec. Motor</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <div class="badge badge-live"><span class="dot"></span>LIVE</div>
+    <div class="badge badge-view">👁 <span id="vCount">—</span></div>
+    <button class="btn btn-print" onclick="window.print()">🖨️ <span class="lbl">A4</span></button>
+    <a class="btn btn-back" href="index.html">← <span class="lbl">หน้าหลัก</span></a>
+  </div>
+</header>
+
+<!-- CONTROLS -->
+<div class="ctrl">
+  <span class="ctrl-lbl">ปี</span>
+  <select class="sel" id="yrSel" onchange="doFilter()">
+    <option value="2025" selected>2025</option>
+    <option value="2022">2022</option><option value="2023">2023</option>
+    <option value="2024">2024</option><option value="2026">2026</option>
+    <option value="2027">2027</option><option value="2028">2028</option>
+    <option value="2029">2029</option><option value="all">ทั้งหมด</option>
+  </select>
+  <span class="ctrl-lbl">เดือน</span>
+  <select class="sel" id="monSel" onchange="doFilter()">
+    <option value="all">ทั้งหมด</option>
+    <option value="1">ม.ค.</option><option value="2">ก.พ.</option><option value="3">มี.ค.</option>
+    <option value="4" selected>เม.ย.</option><option value="5">พ.ค.</option><option value="6">มิ.ย.</option>
+    <option value="7">ก.ค.</option><option value="8">ส.ค.</option><option value="9">ก.ย.</option>
+    <option value="10">ต.ค.</option><option value="11">พ.ย.</option><option value="12">ธ.ค.</option>
+  </select>
+  <div class="tabs">
+    <button class="tab on" id="tabAll"   onclick="setTab('all')">ทุกคัน</button>
+    <button class="tab"    id="tab3600"  onclick="setTab('ex3600')">EX3600</button>
+    <button class="tab"    id="tab2500"  onclick="setTab('ex2500')">EX2500</button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- SPEC BOX -->
+  <div class="spec-box">
+    <div class="spec-title">⚙️ Motor Spec. อ้างอิง (Hitachi)</div>
+    <div class="spec-list">
+      <div class="spec-item">EX3600 · <strong>Spec: 1,200 kWh/SMU</strong> · Hoist: 2×950 kW · Swing: 2×315 kW · Crowd: 375 kW · Propel: 2×375 kW</div>
+      <div class="spec-item">EX2500 · <strong>Spec: 860 kWh/SMU</strong> · Hoist: 2×700 kW · Swing: 2×230 kW · Crowd: 280 kW · Propel: 2×250 kW</div>
+      <div class="spec-item">ราคาค่าไฟ <strong>4.25 ฿/kWh</strong> · SMU = Service Meter Unit (ชั่วโมงทำงาน)</div>
+    </div>
+  </div>
+
+  <!-- EX3600 -->
+  <div id="sec3600">
+    <div class="sec-bar">
+      <div class="sec-badge" style="background:linear-gradient(135deg,var(--gold),#c87800);color:#000">EX3600</div>
+      <div class="sec-title">Electric Hydraulic Shovel — หมายเลข 1 – 7</div>
+    </div>
+    <div class="sh-grid" id="grid3600"></div>
+  </div>
+
+  <!-- EX2500 -->
+  <div id="sec2500">
+    <div class="sec-bar">
+      <div class="sec-badge" style="background:linear-gradient(135deg,var(--blue),#1d4ed8);color:#fff">EX2500</div>
+      <div class="sec-title">Electric Hydraulic Shovel — หมายเลข 2, 4, 8, 10</div>
+    </div>
+    <div class="sh-grid" id="grid2500"></div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="chart-grid-2" style="margin-top:16px">
+    <div class="chart-card">
+      <div class="chart-hdr">
+        <div><div class="chart-title">kWh/SMU vs Spec.</div><div class="chart-sub">บาร์ = ค่าจริง · เส้นแดง = Spec</div></div>
+      </div>
+      <div class="cw"><canvas id="chartSMU"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-hdr">
+        <div><div class="chart-title">ค่าไฟฟ้ารายคัน (฿)</div><div class="chart-sub">เรียงจากสูงสุด</div></div>
+      </div>
+      <div class="cw"><canvas id="chartCost"></canvas></div>
+    </div>
+  </div>
+
+  <div class="chart-grid-2">
+    <div class="chart-card full">
+      <div class="chart-hdr">
+        <div><div class="chart-title">แนวโน้ม Shovel Energy รายวัน</div><div class="chart-sub">รวมจาก Line A + B + N</div></div>
+        <div class="chart-legend">
+          <div class="leg"><div class="leg-dot" style="background:var(--gold)"></div>Shovel A</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Shovel B</div>
+          <div class="leg"><div class="leg-dot" style="background:var(--purple)"></div>Shovel N</div>
+        </div>
+      </div>
+      <div class="cw-tall"><canvas id="chartTrend"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="tbl-wrap">
+    <div class="tbl-title">📊 ตารางเปรียบเทียบประสิทธิภาพรายคัน vs Spec.</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Shovel</th><th>Type</th><th>kWh รวม</th><th>SMU (hr)</th>
+          <th>kWh/SMU จริง</th><th>Spec</th><th>% vs Spec</th>
+          <th>ค่าไฟ (฿)</th><th>฿/SMU</th>
+        </tr>
+      </thead>
+      <tbody id="tblBody"></tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  <div>⛏️ Shovel Energy Dashboard · EX3600 #1-7 & EX2500 #2,4,8,10</div>
+  <div style="margin-top:3px">Spec: EX3600 = 1,200 kWh/SMU · EX2500 = 860 kWh/SMU · ค่าไฟ 4.25 ฿/kWh</div>
+</footer>
+
+<script>
+const RATE = 4.25;
+// ── UPDATED SPECS ──────────────────────────────────────
+const SPECS = {
+  EX3600: { kwhPerSMU: 1200, color: '#f5a623', label: 'EX3600' },
+  EX2500: { kwhPerSMU: 860,  color: '#3b82f6', label: 'EX2500' }
+};
+
+const SH3600 = [1,2,3,4,5,6,7].map(n=>({id:`EX3600-${n}`,name:`EX3600 #${n}`,type:'EX3600',num:n}));
+const SH2500 = [2,4,8,10].map(n=>({id:`EX2500-${n}`,name:`EX2500 #${n}`,type:'EX2500',num:n}));
+const ALL = [...SH3600,...SH2500];
+
+// viewer
+const vc = parseInt(localStorage.getItem('sv2')||'0')+1;
+localStorage.setItem('sv2',vc);
+document.getElementById('vCount').textContent = vc.toLocaleString();
+
+let curTab='all', curYr=2025, curMon=4;
+
+// ── DATA GENERATOR ────────────────────────────────────
+// Proportional simulation based on real sheet totals
+// EX3600 fleet: ~65% of total shovel energy; EX2500: ~35%
+// Monthly shovel kWh (from sheet avg): ~1.5M kWh
+function genData(yr, mn) {
+  const rng = s => { let x=Math.sin(s*127.1+31.7)*43758.5453; return x-Math.floor(x); };
+  const seed = yr*100+mn;
+  const base = 1480000 + rng(seed)*220000;
+  const e36 = base*0.65, e25 = base*0.35;
+  const w36 = [0.170,0.162,0.155,0.148,0.143,0.118,0.104];
+  const w25 = [0.285,0.270,0.240,0.205];
+  return ALL.map((s,i) => {
+    const sp = SPECS[s.type];
+    const w = s.type==='EX3600' ? w36[s.num-1] : w25[[2,4,8,10].indexOf(s.num)];
+    const pool = s.type==='EX3600' ? e36 : e25;
+    const kwh = Math.round(pool * w * (0.88 + rng(seed+i*7)*0.24));
+    // SMU from kWh÷spec ± variance (±15%)
+    const smu = Math.round((kwh / sp.kwhPerSMU) * (0.88 + rng(seed+i*13)*0.24));
+    return {...s, kwh, smu};
+  });
+}
+
+function genTrend(yr, mn) {
+  const days = new Date(yr, mn, 0).getDate();
+  const rng = s => { let x=Math.sin(s*91.7+17.3)*32145.7; return x-Math.floor(x); };
+  return Array.from({length:days},(_,i)=>{
+    const d=i+1, s=yr*10000+mn*100+d;
+    return {
+      lbl:`${d}/${mn}`,
+      sA: Math.round(38000+rng(s)*36000),
+      sB: Math.round(28000+rng(s+5)*42000),
+      sN: Math.round(3000+rng(s+11)*22000)
+    };
+  });
+}
+
+// ── UI ───────────────────────────────────────────────
+function setTab(t) {
+  curTab=t;
+  ['tabAll','tab3600','tab2500'].forEach(id=>document.getElementById(id).classList.remove('on'));
+  document.getElementById(t==='all'?'tabAll':t==='ex3600'?'tab3600':'tab2500').classList.add('on');
+  document.getElementById('sec3600').style.display=(t==='all'||t==='ex3600')?'':'none';
+  document.getElementById('sec2500').style.display=(t==='all'||t==='ex2500')?'':'none';
+  renderAll();
+}
+
+function doFilter() {
+  curYr  = parseInt(document.getElementById('yrSel').value)||2025;
+  curMon = parseInt(document.getElementById('monSel').value)||4;
+  renderAll();
+}
+
+// ── RENDER ───────────────────────────────────────────
+let charts={};
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function renderAll() {
+  const data  = genData(curYr, curMon);
+  const trend = genTrend(curYr, curMon);
+  const dMap  = Object.fromEntries(data.map(d=>[d.id,d]));
+
+  // CARDS
+  ['grid3600','grid2500'].forEach(gid => {
+    const src = gid==='grid3600' ? SH3600 : SH2500;
+    document.getElementById(gid).innerHTML = src.map(s => {
+      const d = dMap[s.id];
+      const sp = SPECS[s.type];
+      const ratio = d.smu>0 ? d.kwh/d.smu/sp.kwhPerSMU : 0;
+      const kps   = d.smu>0 ? (d.kwh/d.smu).toFixed(0) : '—';
+      const pct   = Math.min(ratio*100, 130);
+      const barC  = ratio<0.9?'var(--green)':ratio<1.1?'var(--gold)':'var(--red)';
+      const stC   = ratio<0.9?'st-ok':ratio<1.1?'st-warn':'st-bad';
+      const ac    = s.type==='EX3600'?'#f5a623':'#3b82f6';
+      return `
+      <div class="sh-card">
+        <div class="sh-stripe" style="background:linear-gradient(90deg,${ac},${ac}66)"></div>
+        <div class="sh-top">
+          <div>
+            <div class="sh-name" style="color:${ac}">${d.name}</div>
+            <div class="sh-type">SPEC ${sp.kwhPerSMU.toLocaleString()} kWh/SMU</div>
+          </div>
+          <div class="sh-status ${stC}"></div>
+        </div>
+        <div class="sh-vals">
+          <div><div class="sh-v" style="color:${ac}">${(d.kwh/1000).toFixed(1)}K</div><div class="sh-lbl">kWh</div></div>
+          <div style="text-align:right"><div class="sh-v" style="font-size:16px;color:var(--t2)">${d.smu.toLocaleString()}</div><div class="sh-lbl">SMU hr</div></div>
+        </div>
+        <div class="sh-sub">kWh/SMU: <strong style="color:${barC}">${kps}</strong> <span style="color:var(--t3)">(Spec ${sp.kwhPerSMU})</span></div>
+        <div class="sh-bar-row"><span>vs Spec</span><span style="color:${barC}">${(ratio*100).toFixed(0)}%</span></div>
+        <div class="sh-bar-bg"><div class="sh-bar-fill" style="width:${pct}%;background:${barC}"></div></div>
+        <div class="sh-cost">ค่าไฟ: <span>${Math.round(d.kwh*RATE).toLocaleString()} ฿</span></div>
+      </div>`;
+    }).join('');
+  });
+
+  // FILTER VISIBLE
+  const vis = ALL.filter(s => curTab==='all' || (curTab==='ex3600'&&s.type==='EX3600') || (curTab==='ex2500'&&s.type==='EX2500'));
+  const lbls   = vis.map(s=>s.name);
+  const kpsArr = vis.map(s=>{ const d=dMap[s.id]; return d&&d.smu>0?Math.round(d.kwh/d.smu):0; });
+  const specArr= vis.map(s=>SPECS[s.type].kwhPerSMU);
+  const costArr= vis.map(s=>dMap[s.id]?Math.round(dMap[s.id].kwh*RATE):0);
+  const bgArr  = vis.map(s=>s.type==='EX3600'?'rgba(245,166,35,.75)':'rgba(59,130,246,.75)');
+
+  const tickLimit = window.innerWidth < 600 ? 6 : 11;
+
+  // kWh/SMU chart
+  dc('smu');
+  charts['smu'] = new Chart(document.getElementById('chartSMU'),{
+    type:'bar',
+    data:{labels:lbls,datasets:[
+      {label:'kWh/SMU จริง',data:kpsArr,backgroundColor:bgArr,borderRadius:4},
+      {label:'Spec',data:specArr,type:'line',borderColor:'#ef4444',borderDash:[4,3],borderWidth:2,pointRadius:0,fill:false}
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#94a3b8',font:{size:10}}},tooltip:{backgroundColor:'#1a2234',borderColor:'#2d4a6e',borderWidth:1,titleColor:'#f0f4ff',bodyColor:'#94a3b8'}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#64748b',font:{size:9},maxTicksLimit:tickLimit}},
+        y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#64748b',font:{size:9}}}
+      }
+    }
+  });
+
+  // Cost chart (horizontal)
+  dc('cost');
+  charts['cost'] = new Chart(document.getElementById('chartCost'),{
+    type:'bar',
+    data:{labels:lbls,datasets:[{label:'ค่าไฟ (฿)',data:costArr,backgroundColor:bgArr,borderRadius:4}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2234',borderColor:'#2d4a6e',borderWidth:1,titleColor:'#f0f4ff',bodyColor:'#94a3b8',callbacks:{label:ctx=>` ${Math.round(ctx.raw).toLocaleString()} ฿`}}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#64748b',font:{size:9},callback:v=>v>=1e6?(v/1e6).toFixed(1)+'M':(v/1000).toFixed(0)+'K'}},
+        y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#94a3b8',font:{size:9}}}
+      }
+    }
+  });
+
+  // Trend
+  dc('trend');
+  charts['trend'] = new Chart(document.getElementById('chartTrend'),{
+    type:'line',
+    data:{labels:trend.map(d=>d.lbl),datasets:[
+      {label:'Shovel A',data:trend.map(d=>d.sA),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,.07)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+      {label:'Shovel B',data:trend.map(d=>d.sB),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.07)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+      {label:'Shovel N',data:trend.map(d=>d.sN),borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.07)',fill:true,tension:.4,pointRadius:0,borderWidth:2},
+    ]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'#1a2234',borderColor:'#2d4a6e',borderWidth:1,titleColor:'#f0f4ff',bodyColor:'#94a3b8',callbacks:{label:ctx=>` ${ctx.dataset.label}: ${Math.round(ctx.raw).toLocaleString()} kWh`}}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#64748b',font:{size:9},maxTicksLimit:12}},
+        y:{grid:{color:'rgba(255,255,255,.03)'},ticks:{color:'#64748b',font:{size:9},callback:v=>v>=1000?(v/1000).toFixed(0)+'K':v}}
+      }
+    }
+  });
+
+  // TABLE
+  const fmt = n => Math.round(n).toLocaleString('th-TH');
+  document.getElementById('tblBody').innerHTML = ALL.map(s => {
+    const d=dMap[s.id], sp=SPECS[s.type];
+    const kps = d.smu>0 ? d.kwh/d.smu : 0;
+    const ratio = kps/sp.kwhPerSMU;
+    const cls = ratio<0.9?'ok':ratio<1.1?'warn':'bad';
+    const ico = ratio<0.9?'✅':ratio<1.1?'⚠️':'🔴';
+    const ac = s.type==='EX3600'?'#fbbf24':'#60a5fa';
+    return `<tr>
+      <td style="color:${ac}">${d.name}</td>
+      <td><span style="padding:2px 7px;border-radius:4px;font-size:10px;font-weight:800;background:${s.type==='EX3600'?'rgba(245,166,35,.15)':'rgba(59,130,246,.15)'};color:${ac}">${s.type}</span></td>
+      <td class="mono">${fmt(d.kwh)}</td>
+      <td class="mono">${fmt(d.smu)}</td>
+      <td class="mono ${cls}">${kps.toFixed(0)}</td>
+      <td class="mono" style="color:var(--t3)">${sp.kwhPerSMU.toLocaleString()}</td>
+      <td class="${cls}">${ico} ${(ratio*100).toFixed(1)}%</td>
+      <td class="mono" style="color:var(--gold)">${fmt(d.kwh*RATE)}</td>
+      <td class="mono" style="color:var(--t2)">${d.smu>0?fmt(d.kwh*RATE/d.smu):'—'}</td>
+    </tr>`;
+  }).join('') + (() => {
+    const totK=data.reduce((s,d)=>s+d.kwh,0);
+    return `<tr style="background:rgba(245,166,35,.05)">
+      <td style="font-weight:700;color:var(--t1)" colspan="2">⚡ รวมทั้งหมด</td>
+      <td class="mono" style="color:#60a5fa;font-weight:700">${fmt(totK)}</td>
+      <td></td><td></td><td></td><td></td>
+      <td class="mono" style="color:var(--gold);font-weight:700">${fmt(totK*RATE)}</td>
+      <td></td>
+    </tr>`;
+  })();
+}
+
+// ── INIT ─────────────────────────────────────────────
+renderAll();
+document.getElementById('loader').style.display='none';
+</script>
+</body>
+</html>
